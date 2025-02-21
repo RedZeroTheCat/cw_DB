@@ -3,6 +3,7 @@ from repositories.users import get_user_dashboard
 from repositories.groups import get_group_members
 from repositories.modules import list_modules
 from repositories.campaigns import update_campaign_status
+from repositories.sessions import get_campaign_sessions
 from services.campaigns import create_campaign
 from services.sessions import create_session
 from services.achievements import award_achievement
@@ -71,6 +72,15 @@ def show_master_dashboard(user_id: int):
                                 st.success("Сессия создана")
                             else:
                                 st.error("Ошибка создания сессии")
+
+                    st.markdown("---")
+                    st.write("Все сессии кампании:")
+                    sessions = get_campaign_sessions(campaign["campaign_id"])
+                    if sessions:
+                        for session in sessions:
+                            st.write(f"{session['session_date']}: {session['notes']}")
+                    else:
+                        st.write("В этой кампании ещё не было сессий.")
 
                     st.markdown("---")
                     st.write("Выдать достижение")

@@ -1,5 +1,5 @@
 import psycopg2
-
+from psycopg2.extras import RealDictCursor
 from settings import DB_CONFIG
 
 def insert_session(session_data: dict) -> int:
@@ -30,3 +30,15 @@ def update_session_notes(session_id: int, notes: str) -> bool:
             cur.execute(query, (notes, session_id))
             conn.commit()
             return True
+
+def get_campaign_sessions(campaign_id: int) -> list[dict]:
+    query = """
+    SELECT session_date, notes 
+    FROM Sessions 
+    WHERE campaign_id = %s
+    ORDER BY session_date ASC;
+    """
+    with psycopg2.connect(**DB_CONFIG) as conn:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(query, (campaign_id,))
+            return cur.fetchall()
